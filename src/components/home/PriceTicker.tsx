@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 // Crop data for the ticker
@@ -18,31 +18,75 @@ const cropData = [
 
 const PriceTicker = () => {
   const tickerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
   
   useEffect(() => {
-    // Clone the ticker content for seamless looping
-    const createDuplicateContent = () => {
-      if (!tickerRef.current) return;
+    // Create duplicate content for seamless looping
+    const setupTicker = () => {
+      if (!tickerRef.current || !containerRef.current) return;
       
-      const content = tickerRef.current;
-      const clone = content.cloneNode(true);
-      content.parentElement?.appendChild(clone);
+      // Clear any existing duplicated content first
+      const children = Array.from(containerRef.current.children);
+      for (let i = 1; i < children.length; i++) {
+        containerRef.current.removeChild(children[i]);
+      }
+      
+      // Create a duplicate of the ticker content
+      const clone = tickerRef.current.cloneNode(true);
+      containerRef.current.appendChild(clone);
+      
+      // Set the animation duration based on content width
+      const contentWidth = tickerRef.current.offsetWidth;
+      const duration = contentWidth / 50; // Adjust speed here
+      
+      containerRef.current.style.setProperty('--ticker-duration', `${duration}s`);
     };
     
-    createDuplicateContent();
+    // Initial setup
+    setupTicker();
+    
+    // Handle window resize to adjust ticker
+    const handleResize = () => {
+      setupTicker();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   return (
-    <div className="w-full bg-background border-y border-border py-3 overflow-hidden relative">
+    <div 
+      className="w-full bg-background border-y border-border py-3 overflow-hidden relative"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      {/* Gradient overlays */}
       <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-background to-transparent z-10"></div>
       <div className="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-background to-transparent z-10"></div>
       
-      <div className="flex ticker-container relative">
-        <div ref={tickerRef} className="flex animate-ticker-slide whitespace-nowrap">
+      {/* Ticker container */}
+      <div 
+        ref={containerRef}
+        className="ticker-container flex"
+        style={{
+          animation: isHovering ? 'pause' : 'ticker var(--ticker-duration, 30s) linear infinite',
+          '--ticker-duration': '30s'
+        } as React.CSSProperties}
+      >
+        {/* Original ticker content */}
+        <div 
+          ref={tickerRef} 
+          className="flex whitespace-nowrap"
+        >
           {cropData.map((crop, index) => (
             <div 
               key={index} 
-              className="flex items-center px-6 cursor-hover-grow"
+              className="flex items-center px-6 cursor-hover-grow hover:bg-background/80 hover:shadow-sm rounded-full transition-all duration-300"
             >
               <span className="font-medium mr-2">{crop.name}</span>
               <span className="mr-2">${crop.price.toFixed(2)}</span>
@@ -57,6 +101,7 @@ const PriceTicker = () => {
             </div>
           ))}
         </div>
+        {/* The clone will be added via JavaScript */}
       </div>
     </div>
   );

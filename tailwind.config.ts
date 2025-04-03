@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -69,7 +68,7 @@ export default {
 					200: '#bfebd1',
 					300: '#93dbb1',
 					400: '#5ec48a',
-					500: '#27AE60', // Our primary green
+					500: '#27AE60',
 					600: '#21934f',
 					700: '#1e7942',
 					800: '#1d6238',
@@ -132,7 +131,7 @@ export default {
 				},
 				'ticker': {
 					'0%': { transform: 'translateX(0)' },
-					'100%': { transform: 'translateX(-100%)' }
+					'100%': { transform: 'translateX(-50%)' }
 				},
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
@@ -158,7 +157,7 @@ export default {
 				'slide-out-right': 'slide-out-right 0.3s ease-out',
 				'enter': 'fade-in 0.3s ease-out, scale-in 0.2s ease-out',
 				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
-				'ticker-slide': 'ticker 30s linear infinite',
+				'ticker': 'ticker var(--ticker-duration, 30s) linear infinite',
 				'float': 'float 6s ease-in-out infinite',
 				'pulse-gentle': 'pulse-gentle 3s ease-in-out infinite',
 				'rotate-slow': 'rotate-slow 12s linear infinite',
