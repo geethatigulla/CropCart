@@ -22,7 +22,7 @@ const initializeCursorEffects = () => {
   cursorDot.style.transform = 'translate(-50%, -50%)';
   document.body.appendChild(cursorDot);
 
-  document.addEventListener('mousemove', (e) => {
+  document.addEventListener('mousemove', (e: MouseEvent) => {
     requestAnimationFrame(() => {
       cursor.style.left = `${e.clientX}px`;
       cursor.style.top = `${e.clientY}px`;
@@ -34,7 +34,7 @@ const initializeCursorEffects = () => {
 
   // Add effect for magnetic buttons and other interactive elements
   document.querySelectorAll('.magnetic-button').forEach((button) => {
-    button.addEventListener('mousemove', (e) => {
+    button.addEventListener('mousemove', (e: MouseEvent) => {
       const rect = (button as HTMLElement).getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
