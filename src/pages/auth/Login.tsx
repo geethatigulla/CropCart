@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,18 +13,25 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    console.log('Login attempt with:', { email, password });
 
     try {
       await login(email, password);
+      console.log('Login successful');
       toast({
         title: 'Success',
         description: 'You have successfully logged in',
       });
-      navigate('/dashboard');
+      
+      // Get the redirect path from location state or default to dashboard
+      const from = location.state?.from?.pathname || '/dashboard';
+      console.log('Redirecting to:', from);
+      navigate(from);
     } catch (error) {
       console.error('Login failed:', error);
       toast({

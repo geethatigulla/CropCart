@@ -29,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: 'Test User',
         createdAt: new Date(),
       };
+      console.log('Setting user in context:', mockUser);
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
     } catch (error) {
@@ -51,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: 'New User',
         createdAt: new Date(),
       };
+      console.log('Setting user in context after registration:', mockUser);
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
     } catch (error) {
@@ -65,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       // Mock logout
+      console.log('Logging out user');
       setUser(null);
       localStorage.removeItem('user');
     } catch (error) {
@@ -78,11 +81,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Check for stored user data on initial load
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    console.log('Checking for stored user on load', storedUser ? 'Found stored user' : 'No stored user');
+    
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        console.log('Setting user from localStorage:', parsedUser);
+        setUser(parsedUser);
       } catch (error) {
         console.error('Error parsing stored user:', error);
+        localStorage.removeItem('user'); // Remove invalid data
       }
     }
     setIsLoading(false);
