@@ -4,6 +4,8 @@ import { Sun, Moon, Menu, X, ChevronDown, Search, ShoppingCart, User } from 'luc
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,6 +13,8 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState("");
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   
   // Handle scroll event
   useEffect(() => {
@@ -26,6 +30,26 @@ const Header = () => {
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle('dark');
     setIsDarkMode(!isDarkMode);
+  };
+
+  // Handle profile button click
+  const handleProfileClick = () => {
+    console.log('Profile button clicked, user:', user);
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const dropdownMenus = [
@@ -55,14 +79,14 @@ const Header = () => {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2">
           <div className="h-10 w-10 relative overflow-hidden rounded-full bg-cropgreen-500 flex items-center justify-center">
             <span className="font-bold text-white text-lg animate-pulse-gentle">CC</span>
           </div>
           <span className="font-bold text-xl text-foreground">
             <span className="text-cropgreen-500">Crop</span>Cart
           </span>
-        </div>
+        </Link>
         
         {/* Desktop Navigation */}
         {!isMobile && (
@@ -120,7 +144,7 @@ const Header = () => {
             <ShoppingCart size={20} />
           </Button>
           
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={handleProfileClick}>
             <User size={20} />
           </Button>
           
@@ -176,8 +200,8 @@ const Header = () => {
             ))}
             
             <div className="mt-6 flex space-x-4">
-              <Button variant="default" className="flex-1 magnetic-button">Login</Button>
-              <Button variant="outline" className="flex-1 magnetic-button">Register</Button>
+              <Button variant="default" className="flex-1 magnetic-button" onClick={() => navigate('/login')}>Login</Button>
+              <Button variant="outline" className="flex-1 magnetic-button" onClick={() => navigate('/register')}>Register</Button>
             </div>
           </div>
         </div>
